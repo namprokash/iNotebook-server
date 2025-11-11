@@ -1,13 +1,21 @@
 const express = require("express");
-const router = express.Router();
+const userModel = require("../models/UserSchema");
+const userRouter = express.Router();
 
 let obj = {
   name: "Saif",
   stu: "MERN Stack",
 };
 
-router.get("/user", (req, res) => {
+userRouter.get("/user", (req, res) => {
   res.json(obj);
 });
 
-module.exports = router;
+userRouter.post("/user", (req, res) => {
+  // res.json(req.body);
+  const user = userModel(req.body);
+  const saveuser = user.save();
+  res.send("user has been saved successfully!");
+});
+
+module.exports = userRouter;
