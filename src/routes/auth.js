@@ -1,10 +1,13 @@
 const express = require("express");
 const userModel = require("../models/UserSchema");
-const { body, validationResult } = require("express-validator");
+const { body, validationResult, cookie } = require("express-validator");
 const userRouter = express.Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const logedinUser = require("../middleware/LogedinUser");
 const jwtSecretKey = "thisisasecretkey";
+
+// const cookieParser = require("cookie-parser");
 
 userRouter.get("/user", (req, res) => {
   res.json(obj);
@@ -95,20 +98,36 @@ userRouter.post(
         return res.status(400).send("Invalid credentials!");
       }
 
-      const auth = jwt.sign(user.id, jwtSecretKey);
-      console.log(auth);
-      const decoded = jwt.decode(auth, jwtSecretKey);
-      console.log(decoded);
-      res.status(200).json({
-        payload: {
-          name: user.name,
-          email: user.email,
-        },
-      });
+      const auth = jwt.sign({ user }, jwtSecretKey);
+
+      res.cookie("token", auth);
+      // const decoded = jwt.decode(auth, jwtSecretKey).user;
+      // console.log(decoded);
+      res
+        .status(200)
+        .json({
+          message: `${user.name} has been loged in successfully!`,
+          payload: {},
+        });
     } catch (error) {
       console.log(error);
     }
   }
 );
+
+// == usr profile =========
+userRouter.get("/logedin", logedinUser, async (req, res) => {
+  let userId = req.user._id;
+  const user = await userModel.findById(userId).select("-password");
+
+  res.send(user);
+});
+
+// ==== logout ================
+
+userRouter.get("/logout", logedinUser, async (req, res) => {
+  res.clearCookie("token");
+  res.send("logged out successfully !");
+});
 
 module.exports = userRouter;
