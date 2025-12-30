@@ -47,7 +47,9 @@ userRouter.post(
 
       const existUser = await userModel.findOne({ email });
       if (existUser) {
-        return res.status(400).send("User already exist with this email!");
+        return res
+          .status(400)
+          .send({ success: false, msg: "User already exist with this email!" });
       }
 
       // hashing and salting password
@@ -59,10 +61,17 @@ userRouter.post(
       console.log(user._id);
 
       const authToken = jwt.sign({ user }, jwtSecretKey);
-      res.send({ authToken });
+      res.status(200).json({
+        success: true,
+        authToken,
+        payload: user,
+      });
     } catch (error) {
       console.log(error);
-      res.send(error.message);
+      res.json({
+        success: false,
+        msg: error.message,
+      });
     }
   }
 );
@@ -88,27 +97,26 @@ userRouter.post(
       const user = await userModel.findOne({ email });
 
       if (!user) {
-        return res
-          .status(400)
-          .json({ message: "You have entered invalid credentials!" });
+        return res.status(400).send({
+          success: false,
+          msg: "You have entered invalid credentials!",
+        });
       }
 
       const userAuth = await bcrypt.compare(password, user.password);
       if (!userAuth) {
-        return res.status(400).send("Invalid credentials!");
+        return res.status(400).send({ msg: "Invalid credentials!" });
       }
 
-      const auth = jwt.sign({ user }, jwtSecretKey);
+      const authToken = jwt.sign({ user }, jwtSecretKey);
 
-      res.cookie("token", auth);
+      res.cookie("token", authToken);
       // const decoded = jwt.decode(auth, jwtSecretKey).user;
       // console.log(decoded);
-      res
-        .status(200)
-        .json({
-          message: `${user.name} has been loged in successfully!`,
-          payload: {},
-        });
+      res.status(200).json({
+        success: true,
+        authToken,
+      });
     } catch (error) {
       console.log(error);
     }

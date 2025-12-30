@@ -17,7 +17,7 @@ noteRouter.post(
     body("description")
       .notEmpty()
       .withMessage("Description cannot be empty!")
-      .isLength({ min: 12 }),
+      .isLength({ min: 5 }),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -44,7 +44,6 @@ noteRouter.get("/notes", logedinUser, async (req, res) => {
 
   const notes = await noteModel.find({ userId });
 
-  console.log(notes[1].userId.toString());
   res.status(200).send({
     message: "Notes were returned successfully!",
     payload: notes,

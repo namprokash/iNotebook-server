@@ -4,7 +4,8 @@ const jwtSecretKey = "thisisasecretkey";
 // == Checking user logedin or not ============
 
 const logedinUser = (req, res, next) => {
-  const jwtToken = req.cookies.token;
+  const jwtToken =
+    req.cookies.token || req.header("Authorization")?.replace("Bearer ", "");
 
   if (!jwtToken) {
     return res.status(401).send("Authentication faild!");
