@@ -10,7 +10,7 @@ const noteRouter = require("./src/routes/notes");
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "https://namprokash.github.io/iNotebook",
     credentials: true,
   })
 );
