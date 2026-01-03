@@ -8,12 +8,13 @@ const userRouter = require("./src/routes/auth");
 const cookieParser = require("cookie-parser");
 const noteRouter = require("./src/routes/notes");
 
-app.use(
-  cors({
-    origin: "https://namprokash.github.io/iNotebook",
-    credentials: true,
-  })
-);
+// app.use(
+//   cors({
+//     origin: "https://namprokash.github.io/iNotebook",
+//     credentials: true,
+//   })
+// );
+app.use(cors());
 
 app.use(cookieParser());
 app.use(express.json());
